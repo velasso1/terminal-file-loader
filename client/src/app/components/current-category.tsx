@@ -39,8 +39,6 @@ const CurrentCategory: FC = () => {
         </thead>
         <tbody>
           {subcategory.map((item) => {
-            console.log(item);
-
             return (
               <tr key={item.id}>
                 <td>{item.id}</td>
@@ -48,7 +46,12 @@ const CurrentCategory: FC = () => {
                   <img src={item.image} alt="" style={{ width: '150px' }} />
                 </td>
                 <td>{item.name}</td>
-                <td>удалить | редактировать</td>
+                <td>
+                  <button onClick={() => console.log('deleting', item.id)}>
+                    удалить
+                  </button>
+                  <button>редактировать</button>
+                </td>
               </tr>
             );
           })}

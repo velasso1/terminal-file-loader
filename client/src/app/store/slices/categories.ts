@@ -26,7 +26,7 @@ const categoriesSlice = createSlice({
 export const getCategories = () => {
   return async (dispatch: AppDispatch): Promise<void> => {
     try {
-      fetch(`${import.meta.env.VITE_BASE_URL}/getevents`).then((resp) =>
+      fetch(`${import.meta.env.VITE_BASE_URL}/events`).then((resp) =>
         resp.json().then((data) => dispatch(categoriesReceived(data)))
       );
     } catch (error) {
@@ -34,6 +34,16 @@ export const getCategories = () => {
     }
   };
 };
+
+// export const deleteSubcatergoryItem = () => {
+//   return async (dispatch: AppDispatch): Promise<void> => {
+//     try {
+
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   }
+// }
 
 export const { categoriesReceived } = categoriesSlice.actions;
 export default categoriesSlice.reducer;
