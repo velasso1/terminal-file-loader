@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const database = require('./db-connection');
+const fs = require('fs');
 
 import { TCategories } from './types';
 
+// get all events
 router.get('/events', (req: null, res: any) => {
   const query = 'SELECT * FROM data_category';
 
@@ -18,6 +20,9 @@ router.get('/events', (req: null, res: any) => {
   );
 });
 
-router.delete('/events/evendelete/');
+// create an event
+router.post('/categories/subcategories/create', (req: null, res: any) => {
+  // const query = 'INSERT INTO content (title, video)'
+});
 
 module.exports = router;

@@ -3,13 +3,17 @@ import { FC, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../store';
 
-import { ISubcategoryItem } from '../../types/redux-types/initial-states-types';
+import CategoryTable from './ui/category-table';
+import ModalSkelet from './ui/modals/modal-skelet';
+import AddItemForm from './ui/forms/add-item';
+// import AddItemForm from './ui/modals/modal-skelet';
 
 import { routes } from '../../utils/routes/routes';
 
 const CurrentCategory: FC = () => {
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
+
   const { categories } = useAppSelector((state) => state.categoriesSlice);
 
   useEffect(() => {
@@ -22,41 +26,12 @@ const CurrentCategory: FC = () => {
     return <div>...loading</div>;
   }
 
-  const subcategory: ISubcategoryItem[] = JSON.parse(
-    categories[+params.id - 1].subcategory
-  );
-
   return (
     <div className="subcategory">
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>image</th>
-            <th>name</th>
-            <th>action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {subcategory.map((item) => {
-            return (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>
-                  <img src={item.image} alt="" style={{ width: '150px' }} />
-                </td>
-                <td>{item.name}</td>
-                <td>
-                  <button onClick={() => console.log('deleting', item.id)}>
-                    удалить
-                  </button>
-                  <button>редактировать</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <CategoryTable />
+      {/* <AddItemForm />
+       */}
+      <ModalSkelet children={<AddItemForm />} />
     </div>
   );
 };
