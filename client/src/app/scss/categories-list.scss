@@ -1,5 +1,6 @@
 .categories {
   display: flex;
+  justify-content: center;
   margin: 0 auto;
 
   &__list {
@@ -19,6 +20,10 @@
   }
 
   &__image {
+    width: 300px;
+    height: 130px;
+    overflow: hidden;
+
     img {
       width: 300px;
     }

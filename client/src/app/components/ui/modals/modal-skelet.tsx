@@ -12,19 +12,24 @@ const ModalSkelet: FC<IModalSkeletProps> = ({ children }) => {
   return (
     <>
       {open ? (
-        <div className="modal subcategory">
-          <div className="modal__image">
-            <img
-              className="modal__cross"
-              src={cross}
-              alt="close modal"
-              onClick={() => setOpen(false)}
-            />
+        <div>
+          <div className="modal-wrapper" onClick={() => setOpen(false)}></div>
+          <div className="modal subcategory">
+            <div className="modal__image">
+              <img
+                className="modal__cross"
+                src={cross}
+                alt="close modal"
+                onClick={() => setOpen(false)}
+              />
+            </div>
+            <div className="modal__body">{children}</div>
           </div>
-          <div className="modal__body">{children}</div>
         </div>
       ) : null}
-      <button onClick={() => setOpen(true)}>добавить запись</button>
+      <button className="button" onClick={() => setOpen(true)}>
+        Добавить запись
+      </button>
     </>
   );
 };

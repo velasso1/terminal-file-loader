@@ -3,11 +3,15 @@ const cors = require('cors');
 const database = require('./db-connection');
 const http = require('http');
 const api = require('./queries');
+const fs = require('fs');
 
 const app = express();
-const router = express.Router();
 
+app.use(cors());
+app.use(express.json());
 app.use(api);
+
+const router = express.Router();
 
 const port = 5001;
 
