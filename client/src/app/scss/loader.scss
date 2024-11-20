@@ -1,0 +1,21 @@
+.loader {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+
+  &__layout {
+    position: inherit;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 20%;
+  }
+
+  &__spinner {
+    position: inherit;
+    top: 40vh;
+    left: 50vw;
+  }
+}

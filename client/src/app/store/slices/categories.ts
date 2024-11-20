@@ -6,10 +6,18 @@ import { AppDispatch } from '..';
 
 interface IInitialState {
   categories: TCategories;
+  status: {
+    loading: boolean;
+    error: boolean;
+  };
 }
 
 const initialState: IInitialState = {
   categories: [],
+  status: {
+    loading: false,
+    error: false,
+  },
 };
 
 const categoriesSlice = createSlice({
@@ -19,6 +27,10 @@ const categoriesSlice = createSlice({
     categoriesReceived(state, action: PayloadAction<TCategories>) {
       state.categories = action.payload;
     },
+
+    changeLoadingStatus(state, action: PayloadAction<boolean>) {
+      state.status.loading = action.payload;
+    },
   },
 });
 
@@ -27,8 +39,12 @@ const categoriesSlice = createSlice({
 export const getCategories = () => {
   return async (dispatch: AppDispatch): Promise<void> => {
     try {
+      dispatch(changeLoadingStatus(true));
       await fetch(`${import.meta.env.VITE_BASE_URL}/events`).then((resp) =>
-        resp.json().then((data) => dispatch(categoriesReceived(data)))
+        resp.json().then((data) => {
+          dispatch(categoriesReceived(data));
+          dispatch(changeLoadingStatus(false));
+        })
       );
     } catch (error) {
       console.error(error);
@@ -70,5 +86,6 @@ export const createSubcategory = (body: IAddFromState) => {
   };
 };
 
-export const { categoriesReceived } = categoriesSlice.actions;
+export const { categoriesReceived, changeLoadingStatus } =
+  categoriesSlice.actions;
 export default categoriesSlice.reducer;

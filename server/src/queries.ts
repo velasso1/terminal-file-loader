@@ -98,4 +98,7 @@ router.post(
   }
 );
 
+// delete a subcategory
+router.delete('/categories/subcategories/delete', (req: any, res: any) => {});
+
 module.exports = router;
