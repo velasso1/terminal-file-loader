@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const router = express.Router();
 const database = require('./db-connection');
 const multer = require('multer');
@@ -38,7 +39,7 @@ router.post(
       // check for empty fields
       for (const item in req.body) {
         if (req.body[item].length === 0) {
-          res.status(EmptyPayload.ERROR.code).send((new Error(), EmptyPayload));
+          res.status(EmptyPayload.ERROR.emptyPayload.code).send((new Error(), EmptyPayload.ERROR.emptyPayload));
           return;
         }
       }
@@ -47,8 +48,8 @@ router.post(
       const uploadedImage = req.files['image'][0];
       const uploadedVideo = req.files['video'][0];
 
-      fs.writeFileSync(`backend/upload_files/${req.body.id}/${uploadedImage.originalname}`, req.files['image'][0].buffer);
-      fs.writeFileSync(`backend/upload_files/${uploadedVideo.originalname}`, req.files['video'][0].buffer);
+      fs.writeFileSync(`${process.env.FILES_DIR}/${req.body.id}/${uploadedImage.originalname}`, req.files['image'][0].buffer);
+      fs.writeFileSync(`${process.env.FILES_DIR}/${uploadedVideo.originalname}`, req.files['video'][0].buffer);
 
       // update info about files to database
       const checkIdQuery = `SELECT id FROM content ORDER BY id DESC LIMIT 1`;
@@ -64,7 +65,7 @@ router.post(
           const newSubcategoryData = {
             id: results[0].id + 1,
             name: req.body.name,
-            image: `http://10.10.0.11:4001/upload_files/${req.body.id}/${uploadedImage.originalname}`,
+            image: `${process.env.BASE_URL}/upload_files/${req.body.id}/${uploadedImage.originalname}`,
           };
           // and push new data to array
           subcategoryData.push(newSubcategoryData);
@@ -95,10 +96,51 @@ router.post(
 
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.status(200).send({ status: 200, message: 'subcategory created successfull' });
   }
 );
 
 // delete a subcategory
-router.delete('/categories/subcategories/delete', (req: any, res: any) => {});
+router.delete('/categories/subcategories/delete', (req: any, res: any) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+  // DELETE VIDEO === COMPLETE
+  fs.unlinkSync(`${process.env.FILES_DIR}/test-video.mp4`, (error: Error) => {
+    if (error) {
+      res.status(EmptyPayload.ERROR.noSuchFile.code).send((new Error(), EmptyPayload.ERROR.noSuchFile));
+      throw error;
+    }
+  });
+
+  // fs.unlinkSync(`${req.body.imagePath}`, (error) => {if (error) throw error;}); - UNCOMMENT ON PRODUCTION!!!!!
+
+  fs.unlinkSync(`${process.env.FILES_DIR}/${req.body.paramsId}/test-image.jpg`, (error: Error) => {
+    if (error) throw error;
+  });
+
+  const deleteFromContent = `DELETE from content WHERE id = '${req.body.id}'`;
+  const deleteFromDataCategory = `SELECT subcategory FROM data_category WHERE id=${req.body.paramsId}`;
+
+  // DELETE FROM CONTENT = COMPLETED
+  database.query(deleteFromContent, (error: Error, result: any) => {
+    if (error) throw error;
+    res.status(200).send();
+  });
+
+  database.query(deleteFromDataCategory, (error: Error, result: any) => {
+    if (error) throw error;
+
+    const filteredSubcategory = JSON.parse(result[0].subcategory).filter(
+      (item: { id: number; name: string; image: string }) => item.id !== req.body.id
+    );
+
+    const updateSubcategory = `UPDATE data_category SET subcategory='${JSON.stringify(filteredSubcategory)}' WHERE id = ${req.body.paramsId}`;
+
+    database.query(updateSubcategory, (error: Error, result: any) => {
+      if (error) throw error;
+    });
+  });
+});
 
 module.exports = router;

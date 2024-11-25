@@ -2,7 +2,8 @@ import { FC, useState, useEffect } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useAppSelector } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../store';
+import { deleteSubcatergoryItem } from '../../store/slices/categories';
 import { ISubcategoryItem } from '../../../types/redux-types/initial-states-types';
 
 import { routes } from '../../../utils/routes/routes';
@@ -11,6 +12,7 @@ import editBtn from '../../../assets/edit-btn.svg';
 const CategoryTable: FC = () => {
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
 
   const [subcategories, setSubcategories] = useState<ISubcategoryItem[]>();
 
@@ -45,7 +47,16 @@ const CategoryTable: FC = () => {
               </td>
               <td>{item.name}</td>
               <td>
-                <button onClick={() => console.log('deleting', item.id)}>
+                <button
+                  onClick={() => {
+                    dispatch(
+                      deleteSubcatergoryItem({
+                        ...item,
+                        paramsId: params.id ? params.id : '',
+                      })
+                    );
+                  }}
+                >
                   удалить
                 </button>
                 <button className="editbtn">

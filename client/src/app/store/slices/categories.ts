@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { TCategories } from '../../../types/redux-types/initial-states-types';
+import { IDeleteBodyQuery } from '../../../types/redux-types/categories-fetch-types';
 import { IAddFromState } from '../../components/ui/forms/add-item';
 import { AppDispatch } from '..';
 
@@ -52,15 +53,27 @@ export const getCategories = () => {
   };
 };
 
-// export const deleteSubcatergoryItem = () => {
-//   return async (dispatch: AppDispatch): Promise<void> => {
-//     try {
-
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-// }
+export const deleteSubcatergoryItem = (body: IDeleteBodyQuery) => {
+  return async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      dispatch(changeLoadingStatus(true));
+      await fetch(
+        `${import.meta.env.VITE_BASE_URL}/categories/subcategories/delete`,
+        {
+          method: 'DELETE',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((resp) =>
+        resp.json().then(() => dispatch(changeLoadingStatus(false)))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
 
 export const createSubcategory = (body: IAddFromState) => {
   const formData = new FormData();
@@ -79,7 +92,7 @@ export const createSubcategory = (body: IAddFromState) => {
           method: 'POST',
           body: formData,
         }
-      ).then((resp) => resp.json().then((data) => console.log(data)));
+      ).then((resp) => resp.json().then());
     } catch (error) {
       console.error(error);
     }

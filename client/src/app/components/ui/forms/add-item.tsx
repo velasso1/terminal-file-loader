@@ -35,7 +35,10 @@ const AddItemForm: FC = () => {
     setQueryState({ empty: false });
 
     for (const item in state) {
-      if (typeof state[item] === 'string' && state[item].length === 0) {
+      if (
+        (typeof state[item] === 'string' && state[item].length === 0) ||
+        state[item] === null
+      ) {
         setQueryState({ empty: true });
         return;
       }
