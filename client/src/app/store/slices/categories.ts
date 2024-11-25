@@ -37,28 +37,12 @@ const categoriesSlice = createSlice({
 
 // Actions
 
-export const getCategories = () => {
-  return async (dispatch: AppDispatch): Promise<void> => {
-    try {
-      dispatch(changeLoadingStatus(true));
-      await fetch(`${import.meta.env.VITE_BASE_URL}/events`).then((resp) =>
-        resp.json().then((data) => {
-          dispatch(categoriesReceived(data));
-          dispatch(changeLoadingStatus(false));
-        })
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-};
-
 export const deleteSubcatergoryItem = (body: IDeleteBodyQuery) => {
   return async (dispatch: AppDispatch): Promise<void> => {
     try {
       dispatch(changeLoadingStatus(true));
       await fetch(
-        `${import.meta.env.VITE_BASE_URL}/categories/subcategories/delete`,
+        `${import.meta.env.VITE_BASE_URL}categories/subcategories/delete`,
         {
           method: 'DELETE',
           body: JSON.stringify(body),
@@ -87,7 +71,7 @@ export const createSubcategory = (body: IAddFromState) => {
   return async (): Promise<void> => {
     try {
       await fetch(
-        `${import.meta.env.VITE_BASE_URL}/categories/subcategories/create`,
+        `${import.meta.env.VITE_BASE_URL}categories/subcategories/create`,
         {
           method: 'POST',
           body: formData,
