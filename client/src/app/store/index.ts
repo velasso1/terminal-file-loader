@@ -15,8 +15,7 @@ const rootReducer = combineReducers({
 const store = configureStore({
   reducer: rootReducer,
 
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(museumApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(museumApi.middleware),
 });
 
 export default store;

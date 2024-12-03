@@ -29,7 +29,7 @@ router.get('/events', (req: null, res: any) => {
 
 // create a subcategory
 router.post(
-  '/categories/subcategories/create',
+  'categories/subcategory/create',
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 },
@@ -101,7 +101,7 @@ router.post(
 );
 
 // delete a subcategory
-router.delete('/categories/subcategories/delete', (req: any, res: any) => {
+router.delete('categories/subcategory/delete', (req: any, res: any) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 

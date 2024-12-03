@@ -1,7 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 
-import { useAppDispatch } from '../../../store';
-import { createSubcategory } from '../../../store/slices/categories';
+import { useCreateSubcategoryMutation } from '../../../store/api/museum-api';
 import { useParams } from 'react-router-dom';
 
 export interface IAddFromState {
@@ -14,7 +13,8 @@ export interface IAddFromState {
 
 const AddItemForm: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useAppDispatch();
+
+  const [createSubcategory, { data, isLoading, error }] = useCreateSubcategoryMutation();
 
   const [state, setState] = useState<IAddFromState>({
     name: '',
@@ -35,23 +35,31 @@ const AddItemForm: FC = () => {
     setQueryState({ empty: false });
 
     for (const item in state) {
-      if (
-        (typeof state[item] === 'string' && state[item].length === 0) ||
-        state[item] === null
-      ) {
+      if ((typeof state[item] === 'string' && state[item].length === 0) || state[item] === null) {
         setQueryState({ empty: true });
         return;
       }
     }
 
-    dispatch(createSubcategory(state));
+    const formData = new FormData();
+
+    if (state.image !== null && state.video !== null) {
+      formData.append('name', state.name);
+      formData.append('image', state.image);
+      formData.append('video', state.video);
+      formData.append('id', state.id);
+    }
+
+    createSubcategory(formData);
   };
+
+  if (isLoading) {
+    console.log('loading');
+  }
 
   return (
     <>
-      {queryState.empty && (
-        <div className="error">Убедитесь в правильности заполнения полей</div>
-      )}
+      {queryState.empty && <div className="error">Убедитесь в правильности заполнения полей</div>}
 
       <div className="subcategory__form">
         <div className="subcategory__info">
@@ -63,9 +71,7 @@ const AddItemForm: FC = () => {
             id="subcategory-name"
             placeholder="Введите название записи"
             value={state.name}
-            onChange={(e) =>
-              setState({ ...state, name: e.target.value.trim() })
-            }
+            onChange={(e) => setState({ ...state, name: e.target.value.trim() })}
           />
         </div>
 
@@ -105,10 +111,7 @@ const AddItemForm: FC = () => {
           />
         </div>
 
-        <button
-          className="subcategory-button button"
-          onClick={() => validateState()}
-        >
+        <button className="subcategory-button button" onClick={() => validateState()}>
           Создать запись
         </button>
         {/* button for clear value of input */}
