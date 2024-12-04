@@ -1,0 +1,43 @@
+.badge {
+  position: fixed;
+  top: 6vh;
+  left: 40vw;
+  padding: 20px 40px;
+  border-radius: 15px;
+  width: 400px;
+  max-height: 100;
+  overflow: hidden;
+  -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  animation: showBadge 0.1s;
+
+  &__header {
+    font-weight: 700;
+    text-align: center;
+  }
+
+  &__message {
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+@keyframes showBadge {
+  from {
+    opacity: 0%;
+  }
+  to {
+    opacity: 100%;
+  }
+}
+
+.badge-danger {
+  background-color: tomato;
+  color: rgb(88, 15, 2);
+}
+
+.badge-succes {
+  background-color: #60be3a;
+  color: rgb(1, 85, 1);
+}
