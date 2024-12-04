@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store';
 
 import CategoryTable from './ui/category-table';
@@ -12,7 +12,6 @@ import { routes } from '../../utils/routes/routes';
 
 const CurrentCategory: FC = () => {
   const navigate = useNavigate();
-  const params = useParams<{ id: string }>();
 
   const { categories } = useAppSelector((state) => state.categoriesSlice);
 
@@ -22,16 +21,10 @@ const CurrentCategory: FC = () => {
     }
   }, [categories]);
 
-  if (!categories || !params.id) {
-    return <div>...loading</div>;
-  }
-
   return (
-    <div className="subcategory">
+    <div className="subcategories">
+      <ModalSkelet />
       <CategoryTable />
-      {/* <AddItemForm />
-       */}
-      <ModalSkelet children={<AddItemForm />} />
     </div>
   );
 };

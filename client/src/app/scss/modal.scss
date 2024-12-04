@@ -10,8 +10,6 @@
 }
 
 .modal {
-  // display: block;
-
   position: fixed;
   border-radius: 10px;
   background-color: #fff;
@@ -22,7 +20,9 @@
   box-shadow: 0px 0px 20px -10px rgba(0, 0, 0, 0.68);
 
   top: 25%;
-  left: 40%;
+  left: 0;
+  right: 0;
+  margin: auto;
 
   &__image {
     position: relative;
@@ -37,8 +37,11 @@
       cursor: pointer;
     }
   }
+}
 
-  // &__body {
-  //   padding: 0px 0 0px 0;
-  // }
+.buttons {
+  padding: 20px 0;
+  button {
+    margin: 10px 10px;
+  }
 }

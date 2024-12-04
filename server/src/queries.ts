@@ -28,8 +28,9 @@ router.get('/events', (req: null, res: any) => {
 });
 
 // create a subcategory
+
 router.post(
-  'categories/subcategory/create',
+  '/categories/subcategory/create',
   upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 },
@@ -65,7 +66,7 @@ router.post(
           const newSubcategoryData = {
             id: results[0].id + 1,
             name: req.body.name,
-            image: `${process.env.BASE_URL}/upload_files/${req.body.id}/${uploadedImage.originalname}`,
+            image: `${process.env.FILES_DIR}/${req.body.id}/${uploadedImage.originalname}`,
           };
           // and push new data to array
           subcategoryData.push(newSubcategoryData);
@@ -96,15 +97,12 @@ router.post(
 
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.status(200).send({ status: 200, message: 'subcategory created successfull' });
+    res.status(200).send({ status: 200, message: 'SUCCESS' });
   }
 );
 
 // delete a subcategory
-router.delete('categories/subcategory/delete', (req: any, res: any) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-
+router.delete('/categories/subcategory/delete', (req: any, res: any) => {
   // DELETE VIDEO === COMPLETE
   fs.unlinkSync(`${process.env.FILES_DIR}/test-video.mp4`, (error: Error) => {
     if (error) {
@@ -141,6 +139,10 @@ router.delete('categories/subcategory/delete', (req: any, res: any) => {
       if (error) throw error;
     });
   });
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.status(200).send({ status: 200, message: 'SUCCESS REMOVED' });
 });
 
 module.exports = router;

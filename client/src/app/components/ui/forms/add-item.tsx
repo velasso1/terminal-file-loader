@@ -3,6 +3,9 @@ import { FC, useState, useEffect } from 'react';
 import { useCreateSubcategoryMutation } from '../../../store/api/museum-api';
 import { useParams } from 'react-router-dom';
 
+import Loader from '../loader';
+import ErrorBadge from '../badges/error-badge';
+
 export interface IAddFromState {
   [key: string]: string | File | null;
   name: string;
@@ -11,11 +14,14 @@ export interface IAddFromState {
   video: File | null;
 }
 
-const AddItemForm: FC = () => {
+const AddItemForm: FC<{ setOpen: (arg: boolean) => void }> = ({ setOpen }) => {
   const { id } = useParams<{ id: string }>();
 
   const [createSubcategory, { data, isLoading, error }] = useCreateSubcategoryMutation();
 
+  const [queryState, setQueryState] = useState<{ empty: boolean }>({
+    empty: false,
+  });
   const [state, setState] = useState<IAddFromState>({
     name: '',
     id: '',
@@ -27,11 +33,13 @@ const AddItemForm: FC = () => {
     setState({ ...state, id: id ? id : '' });
   }, [id]);
 
-  const [queryState, setQueryState] = useState<{ empty: boolean }>({
-    empty: false,
-  });
+  useEffect(() => {
+    if (data?.status === 200) {
+      setOpen(false);
+    }
+  }, [data]);
 
-  const validateState = () => {
+  const validateState = async () => {
     setQueryState({ empty: false });
 
     for (const item in state) {
@@ -42,7 +50,6 @@ const AddItemForm: FC = () => {
     }
 
     const formData = new FormData();
-
     if (state.image !== null && state.video !== null) {
       formData.append('name', state.name);
       formData.append('image', state.image);
@@ -50,19 +57,18 @@ const AddItemForm: FC = () => {
       formData.append('id', state.id);
     }
 
-    createSubcategory(formData);
+    await createSubcategory(formData);
   };
-
-  if (isLoading) {
-    console.log('loading');
-  }
 
   return (
     <>
+      {data?.status === 200 ? <ErrorBadge status={data?.status} originalStatus={data?.message} badgeType="SUCCESS" /> : null}
+      {error && 'status' && 'originalStatus' in error && <ErrorBadge status={error.status} originalStatus={error.originalStatus} badgeType="ERROR" />}
+      {isLoading && <Loader />}
       {queryState.empty && <div className="error">Убедитесь в правильности заполнения полей</div>}
 
       <div className="subcategory__form">
-        <div className="subcategory__info">
+        <div className="subcategory__modal__info">
           <label className="subcategory__label" htmlFor="subcategory-name">
             Введите название записи
           </label>
@@ -75,7 +81,7 @@ const AddItemForm: FC = () => {
           />
         </div>
 
-        <div className="subcategory__info">
+        <div className="subcategory__modal__info">
           <label className="subcategory__label" htmlFor="ubcategory-image">
             Выберите заставку
           </label>
@@ -93,7 +99,7 @@ const AddItemForm: FC = () => {
           />
         </div>
 
-        <div className="subcategory__info">
+        <div className="subcategory__modal__info">
           <label className="subcategory__label" htmlFor="subcategory-video">
             Выберите видеозапись
           </label>
@@ -111,10 +117,9 @@ const AddItemForm: FC = () => {
           />
         </div>
 
-        <button className="subcategory-button button" onClick={() => validateState()}>
+        <button className="subcategory-button button" disabled={isLoading} onClick={() => validateState()}>
           Создать запись
         </button>
-        {/* button for clear value of input */}
       </div>
     </>
   );

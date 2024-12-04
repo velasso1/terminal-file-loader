@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { TCategories } from '../../../types/redux-types/initial-states-types';
-import { IDeleteBodyQuery } from '../../../types/redux-types/categories-fetch-types';
-import { IAddFromState } from '../../components/ui/forms/add-item';
-import { AppDispatch } from '..';
 
 interface IInitialState {
   categories: TCategories;
@@ -37,22 +34,22 @@ const categoriesSlice = createSlice({
 
 // Actions
 
-export const deleteSubcatergoryItem = (body: IDeleteBodyQuery) => {
-  return async (dispatch: AppDispatch): Promise<void> => {
-    try {
-      dispatch(changeLoadingStatus(true));
-      await fetch(import.meta.env.VITE_BASE_URL + import.meta.env.VITE_DELETE_SUBCATEGORY, {
-        method: 'DELETE',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then((resp) => resp.json().then(() => dispatch(changeLoadingStatus(false))));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-};
+// export const deleteSubcatergoryItem = (body: IDeleteBodyQuery) => {
+//   return async (dispatch: AppDispatch): Promise<void> => {
+//     try {
+//       dispatch(changeLoadingStatus(true));
+//       await fetch(import.meta.env.VITE_BASE_URL + import.meta.env.VITE_DELETE_SUBCATEGORY, {
+//         method: 'DELETE',
+//         body: JSON.stringify(body),
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }).then((resp) => resp.json().then(() => dispatch(changeLoadingStatus(false))));
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+// };
 
 // export const createSubcategory = (body: IAddFromState) => {
 //   const formData = new FormData();

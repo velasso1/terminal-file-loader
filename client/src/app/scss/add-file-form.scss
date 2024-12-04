@@ -8,7 +8,7 @@
   //   }
 }
 
-.subcategory__info {
+.subcategory__modal__info {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,6 +38,14 @@
   background-color: #254074;
   color: #fff;
   transition: 0.2s;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+
+  &:disabled {
+    color: #ccc;
+  }
 
   &:hover {
     background-color: #11264d;

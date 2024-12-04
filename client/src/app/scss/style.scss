@@ -7,6 +7,9 @@
 // ============================================
 
 // GENERAL STYLES
+* {
+  font-family: 'Open Sans';
+}
 // ============================================
 
 // IMPORT COMPONENT STYLES
@@ -16,4 +19,7 @@
 @import './add-file-form.scss';
 @import './errors.scss';
 @import './loader.scss';
+@import './badge.scss';
+@import './subcategory.scss';
+@import './header.scss';
 // ============================================
