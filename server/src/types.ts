@@ -24,3 +24,9 @@ export interface IFileItem {
   buffer: unknown;
   size: number;
 }
+
+export interface IPatchRequest {
+  body: {
+    id: number;
+  };
+}

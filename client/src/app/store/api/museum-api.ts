@@ -37,7 +37,19 @@ export const museumApi = createApi({
       }),
       invalidatesTags: ['Categories'],
     }),
+
+    updateSubcategory: build.mutation<void, { id: number }>({
+      query: (body) => ({
+        url: `${import.meta.env.VITE_UPDATE_SUBCATEGORY}`,
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }),
+      invalidatesTags: ['Categories'],
+    }),
   }),
 });
 
-export const { useGetCategoriesQuery, useCreateSubcategoryMutation, useDeleteSubcategoryMutation } = museumApi;
+export const { useGetCategoriesQuery, useCreateSubcategoryMutation, useDeleteSubcategoryMutation, useUpdateSubcategoryMutation } = museumApi;

@@ -7,9 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const normalizePath = require('./helpers/path-normalizer');
 
-import { TCategories } from './types';
-import { ICreateSubcategoryRequest } from './types';
-
+import { ICreateSubcategoryRequest, IPatchRequest, TCategories } from './types';
 import { EmptyPayload } from './errors';
 
 const upload = multer();
@@ -147,8 +145,6 @@ router.delete('/categories/subcategory/delete', (req: any, response: any) => {
     });
   });
 
-  // fs.unlinkSync(`${req.body.imagePath}`, (error) => {if (error) throw error;}); - UNCOMMENT ON PRODUCTION!!!!!
-
   fs.unlinkSync(`${req.body.image}`, (error: Error) => {
     if (error) throw error;
   });
@@ -174,6 +170,16 @@ router.delete('/categories/subcategory/delete', (req: any, response: any) => {
   response.header('Access-Control-Allow-Origin', '*');
   response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   response.status(200).send({ status: 200, message: 'SUCCESS REMOVED' });
+});
+
+// patch subcategory
+
+router.patch('/categories/subcategory/update', (req: IPatchRequest, res: any) => {
+  console.log('ID FOR PATCH:', req.body);
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.status(200).send({ status: 200, message: 'SUCCESS UPDATED' });
 });
 
 module.exports = router;

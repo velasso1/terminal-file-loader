@@ -17,7 +17,7 @@ const ErrorBadge: FC<IErrorBadgeProps> = ({ status, originalStatus, badgeType })
     <div className={`badge ${badgeType === 'ERROR' ? 'badge-danger' : 'badge-success'}`}>
       <div className="badge__header">{`${status}, Code: ${originalStatus}`}</div>
       <div className="badge__message">
-        {(badgeType === 'ERROR' && 'Возникла ошибка, обратитесь к администратору') || (badgeType === 'SUCCESS' && 'Успешно')}
+        {(badgeType === 'ERROR' && 'Возникла ошибка, обратитесь к администратору') || (badgeType === 'SUCCESS' && 'Операция прошла успешно')}
       </div>
     </div>
   ) : null;

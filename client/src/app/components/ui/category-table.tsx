@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAppSelector } from '../../store';
 import { useDeleteSubcategoryMutation } from '../../store/api/museum-api';
+import { useUpdateSubcategoryMutation } from '../../store/api/museum-api';
 import { ISubcategoryItem } from '../../../types/redux-types/initial-states-types';
 
 import ErrorBadge from './badges/error-badge';
@@ -17,6 +18,7 @@ const CategoryTable: FC = () => {
   const params = useParams<{ id: string }>();
 
   const [deleteSubcategory, { data, isLoading, error }] = useDeleteSubcategoryMutation();
+  const [updateSubcategory, { data: updateData, isLoading: updateLoading, error: updateError }] = useUpdateSubcategoryMutation();
 
   const [subcategories, setSubcategories] = useState<ISubcategoryItem[]>();
 
@@ -33,10 +35,17 @@ const CategoryTable: FC = () => {
     }
   }, [categories, navigate, params.id]);
 
+  const changeSubcategory = async (item: ISubcategoryItem) => {
+    await updateSubcategory({ id: item.id });
+  };
+
   return (
     <>
-      {isLoading && <Loader />}
-      {error && 'status' && 'originalStatus' in error && <ErrorBadge status={error.status} originalStatus={error.originalStatus} badgeType="ERROR" />}
+      {(isLoading || updateLoading || !subcategories) && <Loader />}
+      {(error || updateError) && 'status' && 'originalStatus' in error && (
+        <ErrorBadge status={error.status} originalStatus={error.originalStatus} badgeType="ERROR" />
+      )}
+      {data && <ErrorBadge status={data.message} originalStatus={data.status} badgeType="SUCCESS" />}
       <div className="subcategory">
         {subcategories?.map((item) => {
           return (
@@ -49,7 +58,9 @@ const CategoryTable: FC = () => {
                 <button
                   className="button"
                   onClick={async () => {
-                    // console.log({ ...item });
+                    if (item.id <= 195) {
+                      return;
+                    }
                     await deleteSubcategory({
                       ...item,
                       paramsId: params.id ? params.id : '',
@@ -58,14 +69,7 @@ const CategoryTable: FC = () => {
                 >
                   удалить
                 </button>
-                <button
-                  className="button"
-                  onClick={() => {
-                    console.log({
-                      paramsId: params.id ? params.id : '',
-                    });
-                  }}
-                >
+                <button className="button" onClick={() => changeSubcategory(item)}>
                   изменить
                 </button>
               </div>
