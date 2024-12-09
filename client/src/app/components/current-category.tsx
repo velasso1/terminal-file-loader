@@ -5,8 +5,6 @@ import { useAppSelector } from '../store';
 
 import CategoryTable from './ui/category-table';
 import ModalSkelet from './ui/modals/modal-skelet';
-import AddItemForm from './ui/forms/add-item';
-// import AddItemForm from './ui/modals/modal-skelet';
 
 import { routes } from '../../utils/routes/routes';
 

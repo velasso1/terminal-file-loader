@@ -43,12 +43,13 @@ const CategoryTable: FC = () => {
             <div className="subcategory__item" key={crypto.randomUUID()}>
               <div className="subcategory__image">
                 <div className="subcategory__info">ID: {item.id}</div>
-                <img src={item.image} alt="" style={{ width: '400px' }} />
+                <img src={item.image} alt="" />
               </div>
               <div className="subcategory__action">
                 <button
                   className="button"
                   onClick={async () => {
+                    // console.log({ ...item });
                     await deleteSubcategory({
                       ...item,
                       paramsId: params.id ? params.id : '',

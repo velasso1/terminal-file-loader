@@ -5,6 +5,7 @@ const database = require('./db-connection');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const normalizePath = require('./helpers/path-normalizer');
 
 import { TCategories } from './types';
 import { ICreateSubcategoryRequest } from './types';
@@ -20,12 +21,17 @@ router.get('/events', (req: null, res: any) => {
   database.query(query, (error: Error, results: TCategories) => {
     if (error) throw error;
 
-    res.status(200);
-    res.send(results);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.status(200).send(results);
   });
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 });
+
+let fullImagePath: string = '';
+let newImageName: string = '';
+
+let fullVideoPath: string = '';
+let newVideoName: string = '';
 
 // create a subcategory
 
@@ -49,8 +55,34 @@ router.post(
       const uploadedImage = req.files['image'][0];
       const uploadedVideo = req.files['video'][0];
 
-      fs.writeFileSync(`${process.env.FILES_DIR}/${req.body.id}/${uploadedImage.originalname}`, req.files['image'][0].buffer);
-      fs.writeFileSync(`${process.env.FILES_DIR}/${uploadedVideo.originalname}`, req.files['video'][0].buffer);
+      for (const item in req.files) {
+        const fileName = req.files[item][0].originalname;
+        const ext = path.extname(fileName);
+        const baseName = path.basename(fileName, ext);
+        const index = `${Math.random()}`.slice(2, 7);
+
+        if (item === 'image') {
+          fullImagePath = path.join(process.env.FILES_DIR, req.body.id, fileName);
+          newImageName = `${baseName}${ext}`;
+
+          if (fs.existsSync(fullImagePath)) {
+            fullImagePath = path.join(process.env.FILES_DIR, req.body.id, `${baseName}(${index})${ext}`);
+            newImageName = `${baseName}(${index})${ext}`;
+          }
+
+          fs.writeFileSync(fullImagePath, req.files['image'][0].buffer);
+        } else {
+          fullVideoPath = path.join(process.env.FILES_DIR, fileName);
+          newVideoName = `${baseName}${ext}`;
+
+          if (fs.existsSync(fullVideoPath)) {
+            fullVideoPath = path.join(process.env.FILES_DIR, `${baseName}(${index})${ext}`);
+            newVideoName = `${baseName}(${index})${ext}`;
+          }
+
+          fs.writeFileSync(fullVideoPath, req.files['video'][0].buffer);
+        }
+      }
 
       // update info about files to database
       const checkIdQuery = `SELECT id FROM content ORDER BY id DESC LIMIT 1`;
@@ -66,15 +98,13 @@ router.post(
           const newSubcategoryData = {
             id: results[0].id + 1,
             name: req.body.name,
-            image: `${process.env.FILES_DIR}/${req.body.id}/${uploadedImage.originalname}`,
+            image: normalizePath(fullImagePath),
           };
           // and push new data to array
           subcategoryData.push(newSubcategoryData);
 
           const addSubcategoryQuery = `UPDATE data_category SET subcategory='${JSON.stringify(subcategoryData)}' WHERE id = ${req.body.id}`;
-          const addNewVideoQuery = `INSERT INTO content (id, title, video) VALUES ('${results[0].id + 1}', '${req.body.name}', '${
-            uploadedVideo.originalname
-          }')`;
+          const addNewVideoQuery = `INSERT INTO content (id, title, video) VALUES ('${results[0].id + 1}', '${req.body.name}', '${newVideoName}')`;
 
           // update array with subcategory in database
           database.query(addSubcategoryQuery, (error: Error, results: any) => {
@@ -102,36 +132,37 @@ router.post(
 );
 
 // delete a subcategory
-router.delete('/categories/subcategory/delete', (req: any, res: any) => {
+router.delete('/categories/subcategory/delete', (req: any, response: any) => {
+  const deleteFromContent = `DELETE from content WHERE id = '${req.body.id}'`;
+  const deleteFromDataCategory = `SELECT subcategory FROM data_category WHERE id=${req.body.paramsId}`;
+  const getVideoNameById = `SELECT video FROM content WHERE id = ${req.body.id}`;
+
   // DELETE VIDEO === COMPLETE
-  fs.unlinkSync(`${process.env.FILES_DIR}/test-video.mp4`, (error: Error) => {
-    if (error) {
-      res.status(EmptyPayload.ERROR.noSuchFile.code).send((new Error(), EmptyPayload.ERROR.noSuchFile));
-      throw error;
-    }
+  database.query(getVideoNameById, (req: any, res: { video: string }[]): void => {
+    fs.unlinkSync(`${process.env.FILES_DIR}/${res[0].video}`, (error: Error) => {
+      if (error) {
+        response.status(EmptyPayload.ERROR.noSuchFile.code).send((new Error(), EmptyPayload.ERROR.noSuchFile));
+        throw error;
+      }
+    });
   });
 
   // fs.unlinkSync(`${req.body.imagePath}`, (error) => {if (error) throw error;}); - UNCOMMENT ON PRODUCTION!!!!!
 
-  fs.unlinkSync(`${process.env.FILES_DIR}/${req.body.paramsId}/test-image.jpg`, (error: Error) => {
+  fs.unlinkSync(`${req.body.image}`, (error: Error) => {
     if (error) throw error;
   });
-
-  const deleteFromContent = `DELETE from content WHERE id = '${req.body.id}'`;
-  const deleteFromDataCategory = `SELECT subcategory FROM data_category WHERE id=${req.body.paramsId}`;
 
   // DELETE FROM CONTENT = COMPLETED
   database.query(deleteFromContent, (error: Error, result: any) => {
     if (error) throw error;
-    res.status(200).send();
+    response.status(200).send();
   });
 
   database.query(deleteFromDataCategory, (error: Error, result: any) => {
     if (error) throw error;
 
-    const filteredSubcategory = JSON.parse(result[0].subcategory).filter(
-      (item: { id: number; name: string; image: string }) => item.id !== req.body.id
-    );
+    const filteredSubcategory = JSON.parse(result[0].subcategory).filter((item: { id: number; name: string; image: string }) => item.id !== req.body.id);
 
     const updateSubcategory = `UPDATE data_category SET subcategory='${JSON.stringify(filteredSubcategory)}' WHERE id = ${req.body.paramsId}`;
 
@@ -140,9 +171,9 @@ router.delete('/categories/subcategory/delete', (req: any, res: any) => {
     });
   });
 
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.status(200).send({ status: 200, message: 'SUCCESS REMOVED' });
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  response.status(200).send({ status: 200, message: 'SUCCESS REMOVED' });
 });
 
 module.exports = router;

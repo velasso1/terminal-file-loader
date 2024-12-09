@@ -10,13 +10,13 @@ export interface ICreateSubcategoryRequest {
   };
   file: {};
   files: {
-    [key: string]: [IFleItem];
-    image: [IFleItem];
-    video: [IFleItem];
+    [key: string]: [IFileItem];
+    image: [IFileItem];
+    video: [IFileItem];
   };
 }
 
-interface IFleItem {
+export interface IFileItem {
   fieldname: string;
   originalname: string;
   encoding: string;
