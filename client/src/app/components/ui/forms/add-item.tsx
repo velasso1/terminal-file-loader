@@ -3,6 +3,8 @@ import { FC, useState, useEffect } from 'react';
 import { useCreateSubcategoryMutation } from '../../../store/api/museum-api';
 import { useParams } from 'react-router-dom';
 
+import { IInitialState } from '../modals/modal-skelet';
+
 import Loader from '../loader';
 import ErrorBadge from '../badges/error-badge';
 
@@ -14,7 +16,7 @@ export interface IAddFromState {
   video: File | null;
 }
 
-const AddItemForm: FC<{ setOpen: (arg: boolean) => void }> = ({ setOpen }) => {
+const AddItemForm: FC<{ modalHandler: (arg: IInitialState) => void; modalsState: IInitialState }> = ({ modalHandler, modalsState }) => {
   const { id } = useParams<{ id: string }>();
 
   const [createSubcategory, { data, isLoading, error }] = useCreateSubcategoryMutation();
@@ -35,7 +37,7 @@ const AddItemForm: FC<{ setOpen: (arg: boolean) => void }> = ({ setOpen }) => {
 
   useEffect(() => {
     if (data?.status === 200) {
-      setOpen(false);
+      modalHandler({ ...modalsState, openAddItem: false });
     }
   }, [data]);
 

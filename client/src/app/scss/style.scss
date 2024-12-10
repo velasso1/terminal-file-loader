@@ -10,13 +10,37 @@
 * {
   font-family: 'Open Sans';
 }
+
+.button {
+  padding: 15px 40px;
+  margin: 10px 0;
+  border-radius: 10px;
+  font-size: 15px;
+  background-color: #254074;
+  color: #fff;
+  transition: 0.2s;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+
+  &:disabled {
+    color: #4b4b4b;
+    background-color: #ccc;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background-color: #11264d;
+  }
+}
+
 // ============================================
 
 // IMPORT COMPONENT STYLES
 @import './categories-list.scss';
 @import './current-category.scss';
-@import './modal.scss';
-@import './add-file-form.scss';
+@import './modals/modal.scss';
 @import './errors.scss';
 @import './loader.scss';
 @import './badge.scss';

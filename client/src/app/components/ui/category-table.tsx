@@ -33,7 +33,7 @@ const CategoryTable: FC = () => {
     if (params.id) {
       setSubcategories(JSON.parse(categories[+params.id - 1].subcategory));
     }
-  }, [categories, navigate, params.id]);
+  }, [categories, params.id]);
 
   const changeSubcategory = async (item: ISubcategoryItem) => {
     await updateSubcategory({ id: item.id });

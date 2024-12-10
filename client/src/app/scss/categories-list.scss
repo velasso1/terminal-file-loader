@@ -12,6 +12,8 @@
   &__item {
     border-radius: 15px;
     padding: 8px 10px 8px 10px;
+    min-width: 410px;
+    min-height: 172px;
     width: max-content;
     transition: 0.3s;
 
@@ -37,4 +39,13 @@
       border-radius: 15px;
     }
   }
+}
+
+.item-create {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid #ccc;
 }

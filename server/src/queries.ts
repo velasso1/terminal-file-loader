@@ -182,4 +182,50 @@ router.patch('/categories/subcategory/update', (req: IPatchRequest, res: any) =>
   res.status(200).send({ status: 200, message: 'SUCCESS UPDATED' });
 });
 
+// Routes for categories
+
+router.post(
+  '/categories/category/create',
+  upload.fields([{ name: 'image', maxCount: 1 }]),
+  (req: { body: { name: string }; files: { image: [{ buffer: string; originalname: string }] } }, response: any) => {
+    const newSubcategoryField: { id: number; name: string; image: string }[] = [];
+
+    const getLastCategoryId = `SELECT id FROM data_category ORDER BY id DESC LIMIT 1`;
+
+    database.query(getLastCategoryId, (error: Error, res: { id: number }[]) => {
+      if (error) {
+        throw error;
+      }
+
+      const newId = res[0].id + 1;
+
+      fs.mkdir(`${process.env.FILES_DIR}/${newId}`, (creatingError: Error) => {
+        if (creatingError) {
+          throw error;
+        }
+      });
+
+      const categoryImage = req.files['image'][0];
+      const imagePath = process.env.CATEGORY_IMAGE + categoryImage.originalname;
+      fs.writeFileSync(imagePath, categoryImage.buffer);
+
+      const addNewCategory = `INSERT INTO data_category (id, category, subcategory, style) VALUES ('${newId}', '${req.body.name}', '${JSON.stringify(newSubcategoryField)}', '${imagePath}')`;
+
+      database.query(addNewCategory, (error: Error, result: any) => {
+        if (error) {
+          throw error;
+        }
+      });
+    });
+
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    response.status(200).send({ STATUS: 200, MESSAGE: 'SUCCESS CREATED' });
+  }
+);
+
+router.delete('/categories/category/delete', (req: { body: { id: number } }, res: any) => {
+  console.log(req.body.id);
+});
+
 module.exports = router;

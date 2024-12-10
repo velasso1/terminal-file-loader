@@ -1,0 +1,38 @@
+.confirm {
+  &__attention {
+    font-size: 20px;
+    color: tomato;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+  }
+
+  &__content {
+    text-align: center;
+    padding: 5px 30px 5px 30px;
+  }
+
+  &__question {
+    padding-bottom: 10px;
+  }
+
+  &__emphasis {
+    text-transform: uppercase;
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__approve:hover {
+    background-color: rgb(212, 39, 9);
+  }
+
+  &__timer {
+    font-size: 13px;
+    color: #979797;
+  }
+}

@@ -1,0 +1,28 @@
+.create-category {
+  padding: 15px 20px 0 20px;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  &__info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-left: 10px;
+  }
+
+  #category-name {
+    border: 1px solid black;
+    border-radius: 5px;
+    min-width: 260px;
+    padding-left: 10px;
+    margin: 0 0 15px 20px;
+  }
+
+  &__buttons {
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+  }
+}

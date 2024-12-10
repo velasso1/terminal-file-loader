@@ -4,3 +4,8 @@ export interface IDeleteBodyQuery {
   name: string;
   paramsId: string;
 }
+
+export interface ICreateCategoryQuery {
+  name: string;
+  image: File | null;
+}
