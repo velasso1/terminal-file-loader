@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
-import { useAppDispatch } from './store';
+import { useAppDispatch, useAppSelector } from './store';
 import { categoriesReceived } from './store/slices/categories';
 import { useGetCategoriesQuery } from './store/api/museum-api';
 
@@ -18,6 +18,7 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
 
   const { data, isLoading, error } = useGetCategoriesQuery();
+  const { online } = useAppSelector((state) => state.museumApi.config);
 
   useEffect(() => {
     if (data) {
@@ -27,6 +28,7 @@ const App: FC = () => {
 
   return (
     <>
+      {!online && <ErrorBadge status={'Отсутствует подключение к интернету'} originalStatus={'000'} badgeType="ERROR" timer={false} />}
       {isLoading && <Loader />}
       {error && 'status' && 'originalStatus' in error && <ErrorBadge status={error.status} originalStatus={error.originalStatus} badgeType="ERROR" />}
       <Header />
