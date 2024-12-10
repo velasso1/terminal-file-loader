@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const normalizePath = require('./helpers/path-normalizer');
 
-import { ICreateSubcategoryRequest, IPatchRequest, TCategories } from './types';
+import { ICreateSubcategoryRequest, IPatchRequest, TCategories, IDeleteCategoryResult } from './types';
 import { EmptyPayload } from './errors';
 
 const upload = multer();
@@ -224,8 +224,52 @@ router.post(
   }
 );
 
-router.delete('/categories/category/delete', (req: { body: { id: number } }, res: any) => {
-  console.log(req.body.id);
+router.delete('/categories/category/delete', (req: { body: { id: number } }, response: any) => {
+  const getSubcategoriesById = `SELECT * FROM data_category WHERE id = '${req.body.id}'`;
+  const deleteCategory = `DELETE FROM data_category WHERE id = '${req.body.id}'`;
+
+  database.query(getSubcategoriesById, (error: Error, result: IDeleteCategoryResult[]) => {
+    if (error) {
+      throw error;
+    }
+    // @ts-ignore
+    const subcategories: ISubcategory[] = JSON.parse(result[0].subcategory);
+    const ids: number[] = [];
+
+    subcategories.map((item) => {
+      ids.push(item.id);
+    });
+
+    const queryForDeleteCategories = `DELETE FROM content WHERE id IN (${ids.join(', ')})`;
+
+    database.query(deleteCategory, (error: Error, res: any) => {
+      if (error) {
+        throw error;
+      }
+    });
+
+    database.query(queryForDeleteCategories, (error: Error, res: any) => {
+      if (error) {
+        throw error;
+      }
+    });
+
+    fs.unlinkSync(result[0].style, (error: Error) => {
+      if (error) {
+        throw error;
+      }
+    });
+
+    fs.rm(`${process.env.FILES_DIR}/${req.body.id}`, { recursive: true }, (error: Error) => {
+      if (error) {
+        throw error;
+      }
+    });
+  });
+
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  response.status(200).send({ STATUS: 200, MESSAGE: 'SUCCESS CREATED' });
 });
 
 module.exports = router;

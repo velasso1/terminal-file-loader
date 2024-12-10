@@ -1,10 +1,11 @@
 import { FC, useState, useEffect } from 'react';
 
 import { useDeleteCategoryMutation } from '../../../store/api/museum-api';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import Loader from '../loader';
 import { IInitialState } from '../modals/modal-skelet';
+import { routes } from '../../../../utils/routes/routes';
 
 interface IConfirmModalProps<T> {
   modalHandler: (arg: T) => void;
@@ -13,6 +14,7 @@ interface IConfirmModalProps<T> {
 
 const ConfirmAction: FC<IConfirmModalProps<IInitialState>> = ({ modalHandler, modalsState }) => {
   const params = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 
   const [deleteCategoryQuery, { data, isLoading, error }] = useDeleteCategoryMutation();
@@ -30,6 +32,8 @@ const ConfirmAction: FC<IConfirmModalProps<IInitialState>> = ({ modalHandler, mo
   const deleteCategory = () => {
     if (params.id) {
       deleteCategoryQuery({ id: params.id });
+
+      navigate(routes.categoriesList);
     }
     modalHandler({ ...modalsState, deleteCategory: false });
   };

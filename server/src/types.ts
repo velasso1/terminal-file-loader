@@ -30,3 +30,16 @@ export interface IPatchRequest {
     id: number;
   };
 }
+
+export interface IDeleteCategoryResult {
+  id: number;
+  category: string;
+  subcategory: ISubcategory;
+  style: string;
+}
+
+export interface ISubcategory {
+  id: number;
+  name: string;
+  image: string;
+}
