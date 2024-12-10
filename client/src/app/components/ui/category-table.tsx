@@ -30,8 +30,14 @@ const CategoryTable: FC = () => {
       return;
     }
 
-    if (params.id) {
-      setSubcategories(JSON.parse(categories[+params.id - 1].subcategory));
+    if (params.id && categories) {
+      categories.map((item) => {
+        // @ts-ignore
+        if (item.id === +params.id) {
+          // @ts-ignore
+          setSubcategories(JSON.parse(item.subcategory));
+        }
+      });
     }
   }, [categories, params.id]);
 
@@ -47,35 +53,39 @@ const CategoryTable: FC = () => {
       )}
       {data && <ErrorBadge status={data.message} originalStatus={data.status} badgeType="SUCCESS" />}
       <div className="subcategory">
-        {subcategories?.map((item) => {
-          return (
-            <div className="subcategory__item" key={crypto.randomUUID()}>
-              <div className="subcategory__image">
-                <div className="subcategory__info">ID: {item.id}</div>
-                <img src={item.image} alt="" />
+        {subcategories && subcategories.length > 0 ? (
+          subcategories?.map((item) => {
+            return (
+              <div className="subcategory__item" key={crypto.randomUUID()}>
+                <div className="subcategory__image">
+                  <div className="subcategory__info">ID: {item.id}</div>
+                  <img src={item.image} alt="" />
+                </div>
+                <div className="subcategory__action">
+                  <button
+                    className="button"
+                    onClick={async () => {
+                      if (item.id <= 195) {
+                        return;
+                      }
+                      await deleteSubcategory({
+                        ...item,
+                        paramsId: params.id ? params.id : '',
+                      });
+                    }}
+                  >
+                    удалить
+                  </button>
+                  <button className="button" onClick={() => changeSubcategory(item)}>
+                    изменить
+                  </button>
+                </div>
               </div>
-              <div className="subcategory__action">
-                <button
-                  className="button"
-                  onClick={async () => {
-                    if (item.id <= 195) {
-                      return;
-                    }
-                    await deleteSubcategory({
-                      ...item,
-                      paramsId: params.id ? params.id : '',
-                    });
-                  }}
-                >
-                  удалить
-                </button>
-                <button className="button" onClick={() => changeSubcategory(item)}>
-                  изменить
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div>События не добавлены</div>
+        )}
       </div>
     </>
   );

@@ -242,29 +242,33 @@ router.delete('/categories/category/delete', (req: { body: { id: number } }, res
 
     const queryForDeleteCategories = `DELETE FROM content WHERE id IN (${ids.join(', ')})`;
 
-    database.query(deleteCategory, (error: Error, res: any) => {
-      if (error) {
-        throw error;
-      }
-    });
-
-    database.query(queryForDeleteCategories, (error: Error, res: any) => {
-      if (error) {
-        throw error;
-      }
-    });
-
-    fs.unlinkSync(result[0].style, (error: Error) => {
-      if (error) {
-        throw error;
-      }
-    });
+    if (fs.existsSync(result[0].style)) {
+      fs.unlinkSync(result[0].style, (error: Error) => {
+        if (error) {
+          throw error;
+        }
+      });
+    }
 
     fs.rm(`${process.env.FILES_DIR}/${req.body.id}`, { recursive: true }, (error: Error) => {
       if (error) {
         throw error;
       }
     });
+
+    database.query(deleteCategory, (error: Error, res: any) => {
+      if (error) {
+        throw error;
+      }
+    });
+
+    if (subcategories.length >= 1) {
+      database.query(queryForDeleteCategories, (error: Error, res: any) => {
+        if (error) {
+          throw error;
+        }
+      });
+    }
   });
 
   response.header('Access-Control-Allow-Origin', '*');
